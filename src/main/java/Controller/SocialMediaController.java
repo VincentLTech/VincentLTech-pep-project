@@ -29,9 +29,10 @@ public class SocialMediaController {
         app.post("/register", this::postAccount);
         app.post("/login", this::loginAccount);
         app.post("/messages", this::createMessage);
+        app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
+
         // app.get("/messages", this::getAllMessages);
         // app.get("/messages/{message_id}", this::getMessageById);
-        // app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
         // app.patch("/messages/{message_id}", this::updateMessageByMessageId);
 
         return app;
@@ -71,52 +72,17 @@ public class SocialMediaController {
             ctx.json(mapper.writeValueAsString(createMessage));
         }
     }
-    
-    // private void postAccountHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
+    private void deleteMessageByMessageId(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper(); 
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        Message deleteMessage = messageService.removeMessage(message);
+        if(deleteMessage==null){
+            ctx.status(200);
+        } else{
+            ctx.json(mapper.writeValueAsString(deleteMessage));
+        }
+    }
 
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void checkAccountHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void createMessageHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void deleteMessageByMessageIdHandler(Context ctx) throws JsonProcessingException {
-    //     Message deletedMessage = messageService.delete
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
     // private void getAllMessageForUserHandler(Context ctx) throws JsonProcessingException {
     //     ObjectMapper mapper = new ObjectMapper();
     //     Account author = mapper.readValue(ctx.body(), Account.class);
