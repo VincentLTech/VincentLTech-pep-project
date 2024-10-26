@@ -24,9 +24,9 @@ public class MessageDAO {
             preparedStatement.setLong(3,message.getTime_posted_epoch());
             // preparedStatement.executeQuery(); //this is excute dql
             preparedStatement.executeUpdate();//return 1 if something works and 0 if it fails
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
-            if(pkeyResultSet.next()){//iterate over this ta
-                int generated_author_id = (int) pkeyResultSet.getLong(1);//lets get this value that this value column
+            ResultSet rs = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
+            if(rs.next()){//iterate over this ta
+                int generated_author_id = (int) rs.getLong(1);//lets get this value that this value column
                 return new Message(generated_author_id, message.getPosted_by(),message.getMessage_text(), message.getTime_posted_epoch());
             }
         }
@@ -64,33 +64,32 @@ public class MessageDAO {
             //Write SQL logic here
             String sql = "SELECT * FROM Message";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
             ResultSet rs = preparedStatement.executeQuery();
+
             while(rs.next()){
-                Message message = new Message(rs.getInt("isbn"),
-                        rs.getInt("author_id"),
-                        rs.getString("title"),
-                        rs.getInt("copies_available"));
+                // messages.add(mapResultSetToMessage(rs));
+
+                Message message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
                 messages.add(message);
             }
+            
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
         return messages;
     }
-    // public List<Message> deleteMessage(Message message)throws SQLException{//why do we need SQLException      
-    //     Connection connection = ConnectionUtil.getConnection();
-        
-    //     //Write SQL logic here
-    //     String sql = "DELETE FROM message Where id= ?";
-    //     PreparedStatement preparedStatement = connection.prepareStatement(sql);
-    //     //write preparedStatement's setString method here.
-
-    //     preparedStatement.setString(1,message.getUsername());
-    //     preparedStatement.executeQuery();
-        
-    //     return null;
-    // }
+    private Message mapResultSetToMessage(ResultSet rs) throws SQLException {
+        int messageId = rs.getInt("message_id");
+        int postedBy = rs.getInt("posted_by");
+        String messageText = rs.getString("message_text");
+        long timePostedEpoch = rs.getLong("time_posted_epoch");
+        return new Message(messageId, postedBy, messageText, timePostedEpoch);
+    }
 
     
 }

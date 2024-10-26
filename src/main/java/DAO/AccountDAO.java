@@ -27,9 +27,9 @@ public class AccountDAO {
             preparedStatement.setString(2,account.getPassword());
             // preparedStatement.executeQuery(); //this is excute dql
             preparedStatement.executeUpdate();//return 1 if something works and 0 if it fails
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
-            if(pkeyResultSet.next()){//iterate over this ta
-                int generated_author_id = (int) pkeyResultSet.getLong(1);//lets get this value that this value column
+            ResultSet rs = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
+            if(rs.next()){//iterate over this ta
+                int generated_author_id = (int) rs.getLong(1);//lets get this value that this value column
                 return new Account(generated_author_id, account.getUsername(), account.getPassword());
             }
         }
@@ -48,9 +48,9 @@ public class AccountDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, account.username);
             preparedStatement.setString(2, account.password);
-            ResultSet test = preparedStatement.executeQuery();
-            if(test.next()){//this iterates the record to even check to see if anything is returned
-                return new Account(test.getInt(1), account.getUsername(), account.getPassword());
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs.next()){//this iterates the record to even check to see if anything is returned
+                return new Account(rs.getInt(1), account.getUsername(), account.getPassword());
             }
         }
         catch(Exception e){

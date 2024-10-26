@@ -44,6 +44,12 @@ public class MessageService {
         return null;
     }
     public List<Message> getAllMessages() {
-        return messageDAO.getAllMessages();
+        try{
+            List<Message> messages = messageDAO.getAllMessages();
+            return messages;
+        } catch (Exception e) {
+            System.out.print("Error");
+        }
+        return null;
     }
 }
