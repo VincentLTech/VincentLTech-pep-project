@@ -18,26 +18,12 @@ public class MessageService {
     
     public Message addMessage(Message message) {
         try{
-            validateMessage(message);
+            String username = message.getMessage_text().trim();
+            if (username.isEmpty()) {
+                throw new Exception("Username cannot be blank");
+            }
             Message addingMessage = messageDAO.insertMessage(message);
             return addingMessage;
-        } catch (Exception e) {
-            System.out.print("Error");
-        }
-        return null;
-    }
-    private void validateMessage(Message message) throws Exception{
-        
-        String username = message.getMessage_text().trim();
-
-        if (username.isEmpty()) {
-            throw new Exception("Username cannot be blank");
-        }
-    }
-    public Message removeMessage(Message message) {
-        try{
-            Message removingMessage = messageDAO.deleteMessage(message);
-            return removingMessage;
         } catch (Exception e) {
             System.out.print("Error");
         }
@@ -52,4 +38,46 @@ public class MessageService {
         }
         return null;
     }
+
+
+    public Message getMessageById(int id) {
+        try {
+            Message message = messageDAO.getById(id);
+            if (message==null) {
+                throw new Exception("Missing message");
+            }
+            return message;
+        }  catch (Exception e) {
+            System.out.print("Error");
+        }
+        return null;
+    }
+
+
+    public Message removeMessage(int id) {
+        try{
+            Message message = messageDAO.deleteMessageById(id);
+            if (message==null) {
+                throw new Exception("Missing message");
+            }
+            return message;
+        } catch (Exception e) {
+            System.out.print("Error");
+        }
+        return null;
+    }
+    public Message updateMessage(Message message) {
+        try{
+            String text = message.getMessage_text().trim();
+            if (text.isEmpty()) {
+                throw new Exception("Message is missing");
+            }
+            Message updatingMessage = messageDAO.insertMessage(message);
+            return updatingMessage;
+        } catch (Exception e) {
+            System.out.print("Error");
+        }
+        return null;
+    }
+    
 }

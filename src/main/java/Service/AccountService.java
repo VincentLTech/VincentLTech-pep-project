@@ -54,10 +54,10 @@ public class AccountService {
    
 
     //gets all accounts
-    public List<Account> getAllAccounts() {
-        return accountDAO.getAllAccounts();
-    }
-    public List<Account> getAccountById(Integer id) {
-        return accountDAO.getAllAccountById(id);
-    }
+    // public List<Account> getAllAccounts() {
+    //     return accountDAO.getAllAccounts();
+    // }
+    // public List<Account> getAccountById(Integer id) {
+    //     return accountDAO.getAllAccountById(id);
+    // }
 }

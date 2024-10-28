@@ -30,13 +30,14 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.post("/register", this::postAccount);
         app.post("/login", this::loginAccount);
+
         app.post("/messages", this::createMessage);
         app.get("/messages", this::getAllMessages);
-        // app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
 
-        // app.get("/messages/{message_id}", this::getMessageById);
-        // app.patch("/messages/{message_id}", this::updateMessageByMessageId);
-
+        app.get("/messages/{message_id}", this::getMessageById);
+        app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
+        app.patch("/messages/{message_id}", this::updateMessageByMessageId);
+        // app.get("/accounts/{account_id}/messages", this::getMessagesByAccountId);
         return app;
 
     }
@@ -87,73 +88,36 @@ public class SocialMediaController {
 
 
 
+    private void getMessageById(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper(); 
+        int id = Integer.parseInt(ctx.pathParam("message_id"));
 
-
-
-
-
-
-
-
-
-
+        Message getMessage = messageService.getMessageById(id);
+        if(getMessage==null){
+            ctx.status(200);
+        } else{
+            ctx.json(mapper.writeValueAsString(getMessage));
+        }
+    }
     private void deleteMessageByMessageId(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper(); 
-        Message message = mapper.readValue(ctx.body(), Message.class);
-        Message deleteMessage = messageService.removeMessage(message);
+        int id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message deleteMessage = messageService.removeMessage(id);
         if(deleteMessage==null){
             ctx.status(200);
         } else{
             ctx.json(mapper.writeValueAsString(deleteMessage));
         }
     }
-
-    // private void getAllMessageForUserHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void getAllMessageHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void getMessageTextHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void updateMessageTextByIdHandler(Context ctx) throws JsonProcessingException {
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     Account author = mapper.readValue(ctx.body(), Account.class);
-    //     Account addedAuthor = AccountService.setAuthor(author);
-
-    //     if(addedAuthor!=null){
-    //         ctx.json(mapper.writeValueAsString(addedAuthor));
-    //     }else{
-    //         ctx.status(400);
-    //     }
-    // }
-    // private void exampleHandler(Context context) {
-    //     context.json("sample text");
-    // }
+    private void updateMessageByMessageId(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper(); 
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        Message updateMessage = messageService.updateMessage(message);
+        if(updateMessage==null){
+            ctx.status(400);
+        } else{
+            ctx.json(mapper.writeValueAsString(updateMessage));
+        }
+    }
 
 }

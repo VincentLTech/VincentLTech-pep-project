@@ -26,31 +26,9 @@ public class MessageDAO {
             preparedStatement.executeUpdate();//return 1 if something works and 0 if it fails
             ResultSet rs = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
             if(rs.next()){//iterate over this ta
-                int generated_author_id = (int) rs.getLong(1);//lets get this value that this value column
-                return new Message(generated_author_id, message.getPosted_by(),message.getMessage_text(), message.getTime_posted_epoch());
+                int id = (int) rs.getLong(1);//lets get this value that this value column
+                return new Message(id, message.getPosted_by(),message.getMessage_text(), message.getTime_posted_epoch());
             }
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-    public Message deleteMessage(Message message){
-        System.out.println(message.getPosted_by());
-        System.out.println(message.getMessage_text());
-        System.out.println(message.getTime_posted_epoch());
-        String sql = "DELETE FROM message WHERE message_id = ?";        
-        Connection connection = ConnectionUtil.getConnection();
-        try{
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);//important Statement.RETURN_GENERATED_KEYS
-            preparedStatement.setInt(1,message.getMessage_id());
-            // preparedStatement.executeQuery(); //this is excute dql
-            preparedStatement.executeUpdate();//return 1 if something works and 0 if it fails
-            // ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();//we asked to get the generated keys
-            // if(pkeyResultSet.next()){//iterate over this ta
-            //     int generated_author_id = (int) pkeyResultSet.getLong(1);//lets get this value that this value column
-            //     return new Message(generated_author_id, account.getUsername(), account.getPassword());
-            // }
         }
         catch(Exception e){
             System.out.println(e.getMessage());
@@ -83,6 +61,85 @@ public class MessageDAO {
         }
         return messages;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    public Message getById(int id) {
+        String sql = "SELECT * FROM message WHERE message_id = ?";
+        Connection connection = ConnectionUtil.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            // ResultSet is in a separate try block to ensure it gets closed after use,
+            // even if an exception is thrown during data processing.
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+            Message message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
+                return message;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return null;
+    }
+
+    public Message deleteMessageById(int id){
+        String sql = "DELETE FROM message WHERE message_id = ?";        
+        Connection connection = ConnectionUtil.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+            Message message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
+                return message;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
+    public Message updateMessageById(Message message){
+        String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";        
+        Connection connection = ConnectionUtil.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            
+            preparedStatement.setInt(1,message.getPosted_by());
+            preparedStatement.setString(2,message.getMessage_text());
+            preparedStatement.setLong(3,message.getTime_posted_epoch());
+            preparedStatement.setInt(4, message.getMessage_id());
+            ResultSet rs = preparedStatement.executeQuery();
+            Message message2 = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
+                return message2;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+
     private Message mapResultSetToMessage(ResultSet rs) throws SQLException {
         int messageId = rs.getInt("message_id");
         int postedBy = rs.getInt("posted_by");
