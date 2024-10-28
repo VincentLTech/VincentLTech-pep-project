@@ -140,13 +140,30 @@ public class MessageDAO {
     }
 
 
-    private Message mapResultSetToMessage(ResultSet rs) throws SQLException {
-        int messageId = rs.getInt("message_id");
-        int postedBy = rs.getInt("posted_by");
-        String messageText = rs.getString("message_text");
-        long timePostedEpoch = rs.getLong("time_posted_epoch");
-        return new Message(messageId, postedBy, messageText, timePostedEpoch);
+    public List<Message> getMessagesByAccountId(int accountId) {
+        String sql = "SELECT * FROM message WHERE posted_by = ?";
+        Connection conn = ConnectionUtil.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapResultSetToList(rs);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return new ArrayList<>();
     }
-
+    private List<Message> mapResultSetToList(ResultSet rs) throws SQLException {
+        List<Message> messages = new ArrayList<>();
+        while (rs.next()) {
+            Message message2 = new Message(
+                rs.getInt("message_id"),
+                rs.getInt("posted_by"),
+                rs.getString("message_text"),
+                rs.getLong("time_posted_epoch")
+            );
+        }
+        return messages;
+    }
     
 }

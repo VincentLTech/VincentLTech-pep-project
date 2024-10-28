@@ -79,5 +79,21 @@ public class MessageService {
         }
         return null;
     }
-    
+
+
+
+
+
+
+
+    public List<Message> getMessagesByAccountId(int accountId) {
+        try {
+            List<Message> messages = messageDAO.getMessagesByAccountId(accountId);
+            return messages;
+        } catch (Exception e) {
+            System.out.print("Error");
+        }
+        return null;
+
+    }
 }

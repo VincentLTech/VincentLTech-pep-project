@@ -37,7 +37,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageById);
         app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
         app.patch("/messages/{message_id}", this::updateMessageByMessageId);
-        // app.get("/accounts/{account_id}/messages", this::getMessagesByAccountId);
+        app.get("/accounts/{account_id}/messages", this::getMessagesByAccountId);
         return app;
 
     }
@@ -120,4 +120,21 @@ public class SocialMediaController {
         }
     }
 
+
+
+
+
+    private void getMessagesByAccountId(Context ctx) {
+        int accountId = Integer.parseInt(ctx.pathParam("account_id"));
+
+        List<Message> messages = messageService.getMessagesByAccountId(accountId);
+        if (!messages.isEmpty()) {
+            // If messages are found, send them as a JSON response
+            ctx.json(messages);
+        } else {
+            // If no messages are found, send an empty JSON response
+            ctx.json(messages);
+            ctx.status(200);
+        }
+    }
 }
