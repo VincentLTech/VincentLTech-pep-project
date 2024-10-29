@@ -66,43 +66,32 @@ public class MessageService {
 
 
     public void removeMessage(Message message) {
-        try{
-            boolean hasDeletedMessage = messageDAO.deleteMessageById(message);
-            if (!hasDeletedMessage) {
-                throw new NotFoundResponse("Message to delete not found");
-            } 
-        } catch (Exception e) {
-            System.out.print("75 Error");
-        }
+        boolean hasDeletedMessage = messageDAO.deleteMessageById(message);
+        if (!hasDeletedMessage) {
+            throw new NotFoundResponse("Message to delete not found");
+        } System.out.print("72 Error");
     }
+    
 
-    public Message updateMessage(Message message) {
-        // Retrieve the existing message by its ID
-
-        Message potentialMessageToUpdate = getMessageById(message.getMessage_id());
+    public void updateMessage(Message message, int id) {
 
         // Check if the message exists
-        if (potentialMessageToUpdate==null) {
-            System.out.println("Message not found");
+        if (getMessageById(id)==null) {
+            throw new RuntimeException("Message not found");
+        }
+        // Check to see if the message you want to replace with satify the conditions
+        if (message.getMessage_text() == null ||message.getMessage_text().isEmpty()) {
+            throw new RuntimeException("Message text cannot be empty");
+        }
+        if (message.getMessage_text().length() > 255) {
+            throw new RuntimeException("Message text be more 255");
         }
 
-        // Update the message text with the new value
-        potentialMessageToUpdate.setMessage_text(message.getMessage_text());
-
-        // Validate the updated message
-        if (message.getMessage_text() == null) {
-            System.out.println("Message text cannot be null or empty");
-        }
-        if (message.getMessage_text().length() > 254) {
-            System.out.println("Message text cannot exceed 254 characters");
-        }
-        try {
-            // Update the message in the database
-            messageDAO.updateMessageById(potentialMessageToUpdate);
-            return potentialMessageToUpdate;
-        } catch (Exception e) {
-            System.out.println("It failed");
-        }
+        // Update the message in the database
+        boolean hasUpdatedMessage = messageDAO.updateMessageById(message,id);
+        if (!hasUpdatedMessage) {
+            throw new NotFoundResponse("Message to update failed");
+        } 
     }
 
 

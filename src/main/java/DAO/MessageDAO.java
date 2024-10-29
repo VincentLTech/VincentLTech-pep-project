@@ -1,6 +1,5 @@
 package DAO;
 
-import Model.Account;
 import Model.Message;
 import Util.ConnectionUtil;
 
@@ -127,21 +126,20 @@ public class MessageDAO {
     //     return null;
     // }
     
-    public boolean updateMessageById(Message message){
-        String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";        
+    public boolean updateMessageById(Message message, int id){
+        String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";        
         int rowsUpdated = 0;
         Connection connection = ConnectionUtil.getConnection();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1,message.getPosted_by());
-            preparedStatement.setString(2,message.getMessage_text());
-            preparedStatement.setLong(3,message.getTime_posted_epoch());
-            preparedStatement.setInt(4, message.getMessage_id());
+            preparedStatement.setString(1,message.getMessage_text());
+            preparedStatement.setInt(2, id);
             rowsUpdated = preparedStatement.executeUpdate();
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return rowsUpdated>0;
+        return rowsUpdated > 0;
+
     }
 
 
