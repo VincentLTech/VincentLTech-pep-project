@@ -167,6 +167,8 @@ public class MessageDAO {
                 rs.getString("message_text"),
                 rs.getLong("time_posted_epoch")
             );
+            messages.add(message2);
+            
         }
         return messages;
     }

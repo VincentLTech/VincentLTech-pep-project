@@ -167,18 +167,36 @@ public class SocialMediaController {
 
 
 
-
     private void getMessagesByAccountId(Context ctx) {
-        int accountId = Integer.parseInt(ctx.pathParam("account_id"));
+        try {
+            int accountId = Integer.parseInt(ctx.pathParam("account_id"));
 
-        List<Message> messages = messageService.getMessagesByAccountId(accountId);
-        if (!messages.isEmpty()) {
-            // If messages are found, send them as a JSON response
-            ctx.json(messages);
-        } else {
-            // If no messages are found, send an empty JSON response
-            ctx.json(messages);
-            ctx.status(200);
+            // Call the messageService to retrieve messages by account ID
+            List<Message> messages = messageService.getMessagesByAccountId(accountId);
+            if (!messages.isEmpty()) {
+                // If messages are found, send them as a JSON response
+                ctx.json(messages);
+            } else {
+                // If no messages are found, send an empty JSON response
+                ctx.json(messages);
+                ctx.status(200);
+            }
+        } catch (Exception e) {
+            // Handle ServiceException and set the status code to 400 (Bad Request)
+            ctx.status(400);
         }
     }
+    // private void getMessagesByAccountId(Context ctx) {
+    //     int accountId = Integer.parseInt(ctx.pathParam("account_id"));
+
+    //     List<Message> messages = messageService.getMessagesByAccountId(accountId);
+    //     if (!messages.isEmpty()) {
+    //         // If messages are found, send them as a JSON response
+    //         ctx.json(messages);
+    //     } else {
+    //         // If no messages are found, send an empty JSON response
+    //         ctx.json(messages);
+    //         ctx.status(200);
+    //     }
+    // }
 }

@@ -77,30 +77,33 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message) {
-        Message retrievedMessage = this.getMessageById(message.getMessage_id());
+        // Retrieve the existing message by its ID
+
+        Message potentialMessageToUpdate = getMessageById(message.getMessage_id());
+
         // Check if the message exists
-        if (retrievedMessage==null) {
-            System.out.print("84 Error Message Not Found");
+        if (potentialMessageToUpdate==null) {
+            System.out.println("Message not found");
         }
+
         // Update the message text with the new value
-        retrievedMessage.setMessage_text(message.getMessage_text());
+        potentialMessageToUpdate.setMessage_text(message.getMessage_text());
+
         // Validate the updated message
-        if (message.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
-            System.out.print("92 Error Message text cannot be null or empty");
+        if (message.getMessage_text() == null) {
+            System.out.println("Message text cannot be null or empty");
         }
         if (message.getMessage_text().length() > 254) {
-            System.out.print("96 Message text cannot exceed 254 characters");
+            System.out.println("Message text cannot exceed 254 characters");
         }
         try {
             // Update the message in the database
-            messageDAO.updateMessageById(retrievedMessage);
-            return retrievedMessage;
+            messageDAO.updateMessageById(potentialMessageToUpdate);
+            return potentialMessageToUpdate;
         } catch (Exception e) {
-            System.out.print("100 Error");
+            System.out.println("It failed");
         }
     }
-
-
 
 
 
@@ -115,8 +118,8 @@ public class MessageService {
             System.out.print("Error");
         }
         return null;
-
     }
+
 }
 
 
