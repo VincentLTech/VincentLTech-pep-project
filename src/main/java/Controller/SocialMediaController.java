@@ -11,6 +11,7 @@ import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import java.util.Optional;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -91,7 +92,6 @@ public class SocialMediaController {
     private void getMessageById(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper(); 
         int id = Integer.parseInt(ctx.pathParam("message_id"));
-
         Message getMessage = messageService.getMessageById(id);
         if(getMessage==null){
             ctx.status(200);
@@ -99,25 +99,69 @@ public class SocialMediaController {
             ctx.json(mapper.writeValueAsString(getMessage));
         }
     }
+    
     private void deleteMessageByMessageId(Context ctx) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper(); 
-        int id = Integer.parseInt(ctx.pathParam("message_id"));
-        Message deleteMessage = messageService.removeMessage(id);
-        if(deleteMessage==null){
+        try {
+            int id = Integer.parseInt(ctx.pathParam("message_id"));
+            Message message = messageService.getMessageById(id);
+            if (message!=null) {// The message exists, so delete it
+                messageService.removeMessage(message);
+                ctx.status(200);
+                ctx.json(message);
+            } else {
+                ctx.status(200);
+            }
+        } catch (Exception e) {
             ctx.status(200);
-        } else{
-            ctx.json(mapper.writeValueAsString(deleteMessage));
         }
+        // ObjectMapper mapper = new ObjectMapper(); 
+        // int id = Integer.parseInt(ctx.pathParam("message_id"));
+        // Message deleteMessage = messageService.removeMessage(id);
+        // if(deleteMessage==null){
+        //     ctx.status(200);
+        // } else{
+        //     ctx.json(mapper.writeValueAsString(deleteMessage));
+        // }
     }
     private void updateMessageByMessageId(Context ctx) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper(); 
-        Message message = mapper.readValue(ctx.body(), Message.class);
-        Message updateMessage = messageService.updateMessage(message);
-        if(updateMessage==null){
+        ObjectMapper mapper = new ObjectMapper();
+        Message mappedMessage = mapper.readValue(ctx.body(), Message.class);
+        try {
+            int id = Integer.parseInt(ctx.pathParam("message_id"));
+            mappedMessage.setMessage_id(id);
+            Message messageUpdated = messageService.updateMessage(mappedMessage);
+            ctx.json(messageUpdated);
+
+        } catch (Exception e) {
             ctx.status(400);
-        } else{
-            ctx.json(mapper.writeValueAsString(updateMessage));
         }
+
+
+        // try {
+        //     int id = Integer.parseInt(ctx.pathParam("message_id"));
+        //     Message message = messageService.getMessageById(id);
+        //     if (message!=null) {// The message exists, so delete it
+        //         messageService.updateMessage(message);
+        //         ctx.status(200);
+        //         ctx.json(message);
+        //     } else {
+        //         ctx.status(200);
+        //     }
+        // } catch (Exception e) {
+        //     ctx.status(200);
+        // }
+
+
+        // ObjectMapper mapper = new ObjectMapper(); 
+        // Message message = mapper.readValue(ctx.body(), Message.class);
+        // Message updateMessage = messageService.updateMessage(message);
+        // if(updateMessage==null){
+        //     ctx.status(400);
+        // } else{
+        //     ctx.json(mapper.writeValueAsString(updateMessage));
+        //     // ctx.status(200);
+
+        // }
     }
 
 

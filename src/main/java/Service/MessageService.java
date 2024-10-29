@@ -2,6 +2,7 @@ package Service;
 
 import Model.Account;
 import Model.Message;
+import io.javalin.http.NotFoundResponse;
 import DAO.MessageDAO;
 
 import java.util.List;
@@ -40,6 +41,12 @@ public class MessageService {
     }
 
 
+
+
+
+
+
+
     public Message getMessageById(int id) {
         try {
             Message message = messageDAO.getById(id);
@@ -48,37 +55,51 @@ public class MessageService {
             }
             return message;
         }  catch (Exception e) {
-            System.out.print("Error");
+            System.out.print("57 Error");
         }
         return null;
     }
 
 
-    public Message removeMessage(int id) {
+
+
+
+
+    public void removeMessage(Message message) {
         try{
-            Message message = messageDAO.deleteMessageById(id);
-            if (message==null) {
-                throw new Exception("Missing message");
-            }
-            return message;
+            boolean hasDeletedMessage = messageDAO.deleteMessageById(message);
+            if (!hasDeletedMessage) {
+                throw new NotFoundResponse("Message to delete not found");
+            } 
         } catch (Exception e) {
-            System.out.print("Error");
+            System.out.print("75 Error");
         }
-        return null;
     }
+
     public Message updateMessage(Message message) {
-        try{
-            String text = message.getMessage_text().trim();
-            if (text.isEmpty()) {
-                throw new Exception("Message is missing");
-            }
-            Message updatingMessage = messageDAO.insertMessage(message);
-            return updatingMessage;
-        } catch (Exception e) {
-            System.out.print("Error");
+        Message retrievedMessage = this.getMessageById(message.getMessage_id());
+        // Check if the message exists
+        if (retrievedMessage==null) {
+            System.out.print("84 Error Message Not Found");
         }
-        return null;
+        // Update the message text with the new value
+        retrievedMessage.setMessage_text(message.getMessage_text());
+        // Validate the updated message
+        if (message.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
+            System.out.print("92 Error Message text cannot be null or empty");
+        }
+        if (message.getMessage_text().length() > 254) {
+            System.out.print("96 Message text cannot exceed 254 characters");
+        }
+        try {
+            // Update the message in the database
+            messageDAO.updateMessageById(retrievedMessage);
+            return retrievedMessage;
+        } catch (Exception e) {
+            System.out.print("100 Error");
+        }
     }
+
 
 
 
@@ -97,3 +118,43 @@ public class MessageService {
 
     }
 }
+
+
+
+
+
+// public Message updateMessage(Message message) {
+    //     try{
+    //         if (message.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
+    //             throw new Exception("Message text cannot be null or empty");
+    //         }
+    //         if (message.getMessage_text().length() > 254) {
+    //             throw new Exception("Message text cannot exceed 254 characters");
+    //         }
+    //         Message updatingMessage = messageDAO.updateMessageById(message);
+    //         return updatingMessage;
+    //     } catch (Exception e) {
+    //         System.out.print("Error");
+    //     }
+    //     return null;
+    // }
+    // public Message updateMessage(Message message) {
+    //     Message retrievedMessage = this.getMessageById(message.getMessage_id());
+
+    //     // Check if the message exists
+    //     if (retrievedMessage ==null) {
+    //         throw new Exception("Message not found");
+    //     }
+    //     if (retrievedMessage.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
+    //         throw new Exception("Message text cannot be null or empty");
+    //     }
+    //     if (retrievedMessage.getMessage_text().length() > 254) {
+    //         throw new Exception("Message text cannot exceed 254 characters");
+    //     }
+    //     try {
+    //         messageDAO.update(retrievedMessage.get());
+    //         return retrievedMessage.get();
+    //     } catch (Exception e) {
+    //         throw new Exception("error");
+    //     }
+    // }
