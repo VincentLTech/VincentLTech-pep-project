@@ -31,7 +31,6 @@ public class SocialMediaController {
         app.post("/register", this::postAccount);
         app.post("/login", this::loginAccount);
 
-
         app.post("/messages", this::createMessage);
         app.get("/messages", this::getAllMessages);
 
